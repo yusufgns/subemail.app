@@ -4,18 +4,21 @@ import React from 'react'
 export default function Test() {
   const apiUrl = 'https://submails.vercel.app/api/subscriber_email' // Gerçek API endpoint URL'sini kullanın
 
-  const postData = {
-    email: 'example@example.com',
-    id: 123,
-  }
+  //   const handleTest = async () => {
+  //     let { data: user_email_data, error } = await supabase
+  //       .from('user_email_data')
+  //       .insert([{ email: 'someVaasdasdsalue' }])
+
+  //       console.log(data)
+  //       console.log(error)
+  //   }
+
+  const emailss = 'TESTTTASDAD'
 
   const handleTest = () => {
-    fetch(apiUrl, {
+    fetch('/api/subscriber_email', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json', // Gönderilen veri JSON formatında
-      },
-      body: JSON.stringify(postData), // Veriyi JSON formatına dönüştürerek gönder
+      body: JSON.stringify([{ email: 'example@example.com' }, { userID: 121233 }]),
       mode: 'no-cors', // Opaque yanıt almak için
     })
       .then((response) => {
