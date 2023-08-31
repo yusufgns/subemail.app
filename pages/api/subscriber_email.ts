@@ -1,5 +1,10 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
+const express = require('express')
+const app = express()
+const cors = require('cors')
+
+app.use(cors())
 
 const RATE_LIMIT_DURATION = 60000 // 1 dakika (milisaniye cinsinden)
 const MAX_REQUESTS_PER_USER = 10
