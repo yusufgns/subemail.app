@@ -49,7 +49,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data: email_check, error: email_check_error } = await supabase
     .from('user_email_data')
     .select('*')
-    .eq('email', 'POSTMANSSZZZZZZZ@test.com')
+    .eq('email', email)
   const email_check_length = email_check?.length ?? 0
   if (email_check_length <= 0) {
     await supabase
