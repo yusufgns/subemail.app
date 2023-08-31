@@ -5,10 +5,7 @@ import NextCors from 'nextjs-cors'
 const RATE_LIMIT_DURATION = 60000
 const MAX_REQUESTS_PER_USER = 2
 
-const userRequestCounts = new Map<
-  string,
-  { count: number; lastRequestTime: number }
->()
+const userRequestCounts = new Map<string,{ count: number; lastRequestTime: number }>()
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const userIP = req.socket.remoteAddress as any
@@ -34,7 +31,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       userRequestInfo.lastRequestTime = currentTime
     }
   }
-  
+
   await NextCors(req, res, {
     methods: ['POST'],
     origin: '*',
@@ -49,9 +46,23 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  await supabase
+  const { data: email_check, error: email_check_error } = await supabase
     .from('user_email_data')
-    .insert({ email: email, user_id: userID })
+    .select('*')
+    .eq('email', 'POSTMANSSZZZZZZZ@test.com')
+  const email_check_length = email_check?.length ?? 0
+  if (email_check_length <= 0) {
+    await supabase
+      .from('user_email_data')
+      .insert({ email: email, user_id: userID })
+  } else {
+    const data = email_check?.find((item) => item.user_id === userID)
+    data
+      ? ''
+      : await supabase
+          .from('user_email_data')
+          .insert({ email: email, user_id: userID })
+  }
 
   res.send({ email: email, userID: userID })
 }

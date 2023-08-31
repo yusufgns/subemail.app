@@ -1,5 +1,6 @@
 'use client'
 import React from 'react'
+import supabase from '@/utils/supabase'
 
 export default function Test() {
   const apiUrl = 'https://submails.vercel.app/api/subscriber_email' // Gerçek API endpoint URL'sini kullanın
@@ -15,13 +16,14 @@ export default function Test() {
 
   const emailss = 'TESTTTASDAD'
 
-  const handleTest = () => {
-    fetch('/api/subscriber_email', {
-      method: 'POST',
-      body: JSON.stringify([{ email: 'example@example.com' }, { userID: 121233 }]),
-      mode: 'no-cors', // Opaque yanıt almak için
-    })
+  const handleTest = async () => {
+    // fetch('/api/subscriber_email', {
+    //   method: 'POST',
+    //   body: JSON.stringify([{ email: 'example@example.com' }, { userID: 121233 }]),
+    //   mode: 'no-cors', // Opaque yanıt almak için
+    // })
   }
+
   return (
     <div onClick={handleTest} className="bg-gray-500">
       TEST BUTTON <button>asdasdasdd</button>
