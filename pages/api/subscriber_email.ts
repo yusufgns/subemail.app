@@ -1,7 +1,15 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
+import NextCors from 'nextjs-cors'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
+  await NextCors(req, res, {
+    // Options
+    methods: ['POST'],
+    origin: '*',
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+
   const data = JSON.parse(req.body)
   const { email, userID } = data
 
