@@ -2,7 +2,7 @@ import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const RATE_LIMIT_DURATION = 60000 // 1 dakika (milisaniye cinsinden)
-const MAX_REQUESTS_PER_USER = 1
+const MAX_REQUESTS_PER_USER = 10
 
 const userRequestCounts = new Map<
   string,
