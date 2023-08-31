@@ -2,12 +2,43 @@ import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
+const RATE_LIMIT_DURATION = 60000
+const MAX_REQUESTS_PER_USER = 2
+
+const userRequestCounts = new Map<
+  string,
+  { count: number; lastRequestTime: number }
+>()
+
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
+  const userIP = req.socket.remoteAddress as any
+
+  if (!userRequestCounts.has(userIP)) {
+    userRequestCounts.set(userIP, {
+      count: 1,
+      lastRequestTime: Date.now(),
+    })
+  } else {
+    const userRequestInfo = userRequestCounts.get(userIP) as any
+    const currentTime = Date.now()
+
+    if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
+      if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
+        return res.status(429).json({ error: 'Too many requests' })
+      } else {
+        userRequestInfo.count++
+        userRequestInfo.lastRequestTime = currentTime
+      }
+    } else {
+      userRequestInfo.count = 1
+      userRequestInfo.lastRequestTime = currentTime
+    }
+  }
+  
   await NextCors(req, res, {
-    // Options
     methods: ['POST'],
     origin: '*',
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200,
   })
 
   const data = JSON.parse(req.body)
@@ -22,7 +53,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     .from('user_email_data')
     .insert({ email: email, user_id: userID })
 
-  res.send({ message: 'Hello from the API' })
+  res.send({ email: email, userID: userID })
 }
 
 export default handle
