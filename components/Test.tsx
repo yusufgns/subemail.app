@@ -21,12 +21,6 @@ export default function Test() {
       body: JSON.stringify([{ email: 'example@example.com' }, { userID: 121233 }]),
       mode: 'no-cors', // Opaque yanıt almak için
     })
-      .then((response) => {
-        console.log(response)
-      })
-      .catch((error) => {
-        console.error('Hata:', error)
-      })
   }
   return (
     <div onClick={handleTest} className="bg-gray-500">
