@@ -7,8 +7,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/pages/api/subscriber_email',
-        // matching all API routes
         source: '/api/:path*',
         headers: [
           // Diğer başlıklar
