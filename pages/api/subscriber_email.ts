@@ -56,7 +56,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
-  if (!isHaveEmail.length || isHaveEmail.length <= 0) {
+  if (!isHaveEmail.length || isHaveEmail.length <= 0 || isHaveEmail === undefined) {
     await supabase
       .from('user_email_data')
       .insert({ email: email, user_id: userID })

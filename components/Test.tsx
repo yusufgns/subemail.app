@@ -22,13 +22,26 @@ export default function Test() {
     //   body: JSON.stringify([{ email: 'example@example.com' }, { userID: 121233 }]),
     //   mode: 'no-cors', // Opaque yanıt almak için
     // })
-    fetch(`/api/v1/${'asdasdasd'}.ts`, {
-      method: 'POST',
-      body: JSON.stringify([
-        { email: 'example@example.com' },
-        { userID: 121233 },
-      ]),
-    })
+    ////////////
+    // fetch(`/api/v1/${'asdasdasd'}.ts`, {
+    //   method: 'POST',
+    //   body: JSON.stringify([
+    //     { email: 'example@example.com' },
+    //     { userID: 121233 },
+    //   ]),
+    // })
+    //////////////
+
+    const { data, error } = await supabase
+      .from('user_email_data')
+      .insert([
+        {
+          projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
+          email: 'testerzzzz@gmail.com',
+        },
+      ])
+    console.log(data)
+    console.log(error)
   }
 
   return (
