@@ -5,7 +5,10 @@ import NextCors from 'nextjs-cors'
 const RATE_LIMIT_DURATION = 60000
 const MAX_REQUESTS_PER_USER = 2
 
-const userRequestCounts = new Map<string,{ count: number; lastRequestTime: number }>()
+const userRequestCounts = new Map<
+  string,
+  { count: number; lastRequestTime: number }
+>()
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const userIP = req.socket.remoteAddress as any
@@ -46,17 +49,22 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const { data: email_check, error: email_check_error } = await supabase
+  const { data: isHaveEmail, error: isHaventEmail } = await supabase
     .from('user_email_data')
     .select('*')
     .eq('email', email)
-  const email_check_length = email_check?.length ?? 0
-  if (email_check_length <= 0) {
+
+    if (isHaventEmail) {
+      res.status(400).json({ error: `Something went wrong while connecting to Supabase : ${isHaventEmail}` })
+      return
+    }
+
+  if (!isHaveEmail.length || isHaveEmail.length <= 0) {
     await supabase
       .from('user_email_data')
       .insert({ email: email, user_id: userID })
   } else {
-    const data = email_check?.find((item) => item.user_id === userID)
+    const data = isHaveEmail?.find((item) => item.user_id === userID)
     data
       ? ''
       : await supabase
@@ -64,7 +72,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
           .insert({ email: email, user_id: userID })
   }
 
-  res.send({ email: email, userID: userID })
+  res.send({ email: email, email_key: userID })
 }
 
 export default handle
