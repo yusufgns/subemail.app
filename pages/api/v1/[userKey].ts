@@ -14,10 +14,10 @@ export default async function handler(
 
   const { userKey } = req.query
   const props = JSON.parse(req.body)
-  const { email, emailKey } = props
+  const { email } = props
 
-  if (!email || !emailKey) {
-    res.status(400).json({ error: 'Email and userID are required' })
+  if (!email || !userKey) {
+    res.status(400).json({ error: 'Email and emailKey are required' })
     return
   }
 
@@ -39,14 +39,14 @@ export default async function handler(
   ) {
     await supabase
       .from('user_email_data')
-      .insert({ email: email, user_id: emailKey })
+      .insert({ email: email, projectKey: userKey })
   } else {
-    const data = isHaveEmail?.find((item) => item.user_id === emailKey)
+    const data = isHaveEmail?.find((item) => item.projectKey === userKey)
     data
       ? ''
       : await supabase
           .from('user_email_data')
-          .insert({ email: email, user_id: emailKey })
+          .insert({ email: email, projectKey: userKey })
   }
 
   return res.send(`Hey what are you doing here?`)
