@@ -32,21 +32,19 @@ export default async function handler(
     return
   }
 
-  if (
-    !isHaveEmail.length ||
-    isHaveEmail.length <= 0 ||
-    isHaveEmail === undefined
-  ) {
+  const isCheckEmail = isHaveEmail?.length ?? 0
+
+  if (isCheckEmail <= 0) {
     await supabase
       .from('user_email_data')
-      .insert({ email: email, projectKey: userKey })
+      .insert({ email: email, user_id: userKey })
   } else {
-    const data = isHaveEmail?.find((item) => item.projectKey === userKey)
+    const data = isHaveEmail?.find((item) => item.user_id === userKey)
     data
       ? ''
       : await supabase
           .from('user_email_data')
-          .insert({ email: email, projectKey: userKey })
+          .insert({ email: email, user_id: userKey })
   }
 
   return res.send(`Hey what are you doing here?`)
