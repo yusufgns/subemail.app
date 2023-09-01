@@ -70,7 +70,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       .from('projectEmailList')
       .insert({ email: email, projectKey: projectKey })
   } else {
-    const data = isHaveEmailCheck?.find((item) => item.projectKey === projectKey)
+    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
       ? ''
       : await supabase
