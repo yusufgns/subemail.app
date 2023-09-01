@@ -22,7 +22,7 @@ export default function Test() {
       {
         method: 'POST',
         body: JSON.stringify({
-          email: 'gunesyusuf024@gmail.com',
+          email: 'gunesyusuf024555@gmail.com',
           projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
         }),
         mode: 'no-cors',
