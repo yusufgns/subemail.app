@@ -55,16 +55,14 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     .eq('email', email)
 
   if (isHaventEmail) {
-    res
-      .status(400)
-      .json({
-        error: `Something went wrong while connecting to Supabase : ${isHaventEmail}`,
-      })
+    res.status(400).json({
+      error: `Something went wrong while connecting to Supabase : ${isHaventEmail}`,
+    })
     return
   }
 
   const isHaveEmailCheck = isHaveEmail?.length ?? 0
-  
+
   if (isHaveEmailCheck <= 0) {
     await supabase
       .from('projectEmailList')

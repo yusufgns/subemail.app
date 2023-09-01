@@ -22,7 +22,7 @@ export default async function handler(
   }
 
   const { data: isHaveEmail, error: isHaventEmail } = await supabase
-    .from('projectEmailList')
+    .from('emailList')
     .select('*')
     .eq('email', email)
 
@@ -34,10 +34,10 @@ export default async function handler(
   }
 
   if (isHaveEmail?.length <= 0) {
-    await supabase.from('projectEmailList').insert({
+    await supabase.from('emailList').insert({
       email: email,
       projectKey: projectKey,
-      userEmailController: emailController,
+      cretorEmailKey: emailController,
     })
   } else {
     const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
@@ -45,10 +45,10 @@ export default async function handler(
       ? res.status(400).json({
           error: `This email already exists in the whitelist`,
         })
-      : await supabase.from('projectEmailList').insert({
+      : await supabase.from('emailList').insert({
           email: email,
           projectKey: projectKey,
-          userEmailController: emailController,
+          cretorEmailKey: emailController,
         })
   }
 
