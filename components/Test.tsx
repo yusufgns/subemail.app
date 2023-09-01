@@ -25,7 +25,6 @@ export default function Test() {
           email: 'gunesyusuf024555@gmail.com',
           projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
         }),
-        mode: 'no-cors',
       },
     )
     console.log(data)

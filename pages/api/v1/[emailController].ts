@@ -26,26 +26,22 @@ export default async function handler(
     .select('*')
     .eq('email', email)
 
+  const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
+
+  if (isHaveEmail) {
+    data
+      ? ''
+      : await supabase.from('emailList').insert({
+          email: email,
+          projectKey: projectKey,
+          cretorEmailKey: emailController,
+        })
+  }
+
   if (isHaventEmail) {
     res.status(400).json({
       error: `Something went wrong while connecting to Supabase | Error 400`,
     })
-    return
-  }
-
-  const isHaveEmailCheck = isHaveEmail?.length ?? 0
-
-  if (isHaveEmailCheck <= 0) {
-    await supabase
-      .from('emailList')
-      .insert({ email: email, projectKey: projectKey, cretorEmailKey: emailController })
-  } else {
-    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
-    data
-      ? ''
-      : await supabase
-          .from('user_email_data')
-          .insert({ email: email, projectKey: projectKey, cretorEmailKey: emailController })
   }
 
   return res.send(`Hey what are you doing here?`)
