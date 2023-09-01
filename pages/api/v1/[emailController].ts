@@ -33,29 +33,19 @@ export default async function handler(
     return
   }
 
-  if (isHaveEmail?.length <= 0) {
-    await supabase.from('emailList').insert({
-      email: email,
-      projectKey: projectKey,
-      cretorEmailKey: emailController,
-    })
-    res.status(200).json({
-      error: `Success add email to whitelist`,
-    })
+  const isHaveEmailCheck = isHaveEmail?.length ?? 0
+
+  if (isHaveEmailCheck <= 0) {
+    await supabase
+      .from('emailList')
+      .insert({ email: email, projectKey: projectKey, cretorEmailKey: emailController })
   } else {
     const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
-      ? res.status(400).json({
-          error: `This email already exists in the whitelist`,
-        })
-      : await supabase.from('emailList').insert({
-          email: email,
-          projectKey: projectKey,
-          cretorEmailKey: emailController,
-        })
-        res.status(200).json({
-          error: `Success add email to whitelist`,
-        })
+      ? ''
+      : await supabase
+          .from('user_email_data')
+          .insert({ email: email, projectKey: projectKey, cretorEmailKey: emailController })
   }
 
   return res.send(`Hey what are you doing here?`)
