@@ -17,32 +17,49 @@ export default async function handler(
   const { email, projectKey } = props
 
   if (!email || !projectKey) {
-    res.status(400).json({ error: 'Email and emailKey are required' })
+    res.status(400).json({ error: 'Email and projectKey are required' })
     return
   }
 
-  const { data: isHaveEmail, error: isHaventEmail } = await supabase
+  // E-posta ve proje anahtarıyla veritabanında mevcut bir satırı arayın
+  const { data: existingRowData, error: existingRowError } = await supabase
     .from('emailList')
     .select('*')
     .eq('email', email)
+    .eq('projectKey', projectKey)
 
-  const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
-
-  if (isHaveEmail) {
-    data
-      ? ''
-      : await supabase.from('emailList').insert({
-          email: email,
-          projectKey: projectKey,
-          cretorEmailKey: emailController,
-        })
-  }
-
-  if (isHaventEmail) {
+  if (existingRowError) {
     res.status(400).json({
       error: `Something went wrong while connecting to Supabase | Error 400`,
     })
+    return
   }
 
-  return res.send(`Hey what are you doing here?`)
+  // Eğer aynı e-posta ve aynı proje anahtarı ile bir satır varsa, hata mesajı gönder
+  if (existingRowData.length > 0) {
+    res.status(400).json({
+      error: 'A row with the same email and projectKey combination already exists',
+    })
+    return
+  }
+
+  // Yeni satırı ekleyin
+  const { data: newRowData, error: newRowError } = await supabase
+    .from('emailList')
+    .insert([
+      {
+        email: email,
+        projectKey: projectKey,
+        cretorEmailKey: emailController,
+      },
+    ])
+
+  if (newRowError) {
+    res.status(400).json({
+      error: `Failed to add the row to the database`,
+    })
+    return
+  }
+
+  return res.status(200).json({ message: `Success : Email successfully added` })
 }
