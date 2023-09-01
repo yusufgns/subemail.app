@@ -22,6 +22,13 @@ export default function Test() {
     //   body: JSON.stringify([{ email: 'example@example.com' }, { userID: 121233 }]),
     //   mode: 'no-cors', // Opaque yanıt almak için
     // })
+    fetch(`/api/v1/${'asdasdasd'}.ts`, {
+      method: 'POST',
+      body: JSON.stringify([
+        { email: 'example@example.com' },
+        { userID: 121233 },
+      ]),
+    })
   }
 
   return (
