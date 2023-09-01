@@ -17,12 +17,16 @@ export default function Test() {
   const emailss = 'TESTTTASDAD'
 
   const onSubmit = async () => {
-    const data = await fetch(`https://submails.vercel.app/api/v1/c24debfa-c258-422f-9f53-44e4a0e799db`, {
-      method: 'POST',
-      body: JSON.stringify({
-        email: 'tester3131@gmail.com',
-      }),
-    })
+    const data = await fetch(
+      `https://submails.vercel.app/api/v1/5475742a-a409-40d5-8f30-9f610c71fd88`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'NewTester@gmail.com',
+          projectKey: 'f9bc8080-4218-434b-96b8-e60ad9deef3b',
+        }),
+      },
+    )
     console.log(data)
   }
 

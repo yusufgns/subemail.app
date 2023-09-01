@@ -12,39 +12,46 @@ export default async function handler(
     optionsSuccessStatus: 200,
   })
 
-  const { userKey } = req.query
+  const { emailController } = req.query
   const props = JSON.parse(req.body)
-  const { email } = props
+  const { email, projectKey } = props
 
-  if (!email || !userKey) {
+  if (!email || !emailController) {
     res.status(400).json({ error: 'Email and emailKey are required' })
     return
   }
 
   const { data: isHaveEmail, error: isHaventEmail } = await supabase
-    .from('users')
+    .from('projectEmailList')
     .select('*')
+    .eq('email', email)
 
   if (isHaventEmail) {
     res.status(400).json({
-      error: `Something went wrong while connecting to Supabase : ${isHaventEmail}`,
+      error: `Something went wrong while connecting to Supabase | Error 400`,
     })
     return
   }
 
-  const isCheckEmail = isHaveEmail?.length ?? 0
-
-  if (isCheckEmail <= 0) {
+  if (isHaveEmail?.length <= 0) {
     await supabase
-      .from('user_email_data')
-      .insert({ email: email, user_id: userKey })
+      .from('projectEmailList')
+      .insert({
+        email: email,
+        projectKey: projectKey,
+        userEmailController: emailController,
+      })
   } else {
-    const data = isHaveEmail?.find((item) => item.user_id === userKey)
+    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
       ? ''
       : await supabase
-          .from('user_email_data')
-          .insert({ email: email, user_id: userKey })
+          .from('projectEmailList')
+          .insert({
+            email: email,
+            projectKey: projectKey,
+            userEmailController: emailController,
+          })
   }
 
   return res.send(`Hey what are you doing here?`)
