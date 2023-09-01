@@ -5,7 +5,10 @@ import NextCors from 'nextjs-cors'
 const RATE_LIMIT_DURATION = 60000
 const MAX_REQUESTS_PER_USER = 2
 
-const userRequestCounts = new Map<string,{ count: number; lastRequestTime: number }>()
+const userRequestCounts = new Map<
+  string,
+  { count: number; lastRequestTime: number }
+>()
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const userIP = req.socket.remoteAddress as any
@@ -39,37 +42,43 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   const data = JSON.parse(req.body)
-  const { email, userID } = data
+  const { email, projectKey } = data
 
-  if (!email || !userID) {
+  if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and userID are required' })
     return
   }
 
   const { data: isHaveEmail, error: isHaventEmail } = await supabase
-    .from('user_email_data')
+    .from('projectEmailList')
     .select('*')
     .eq('email', email)
 
-    if (isHaventEmail) {
-      res.status(400).json({ error: `Something went wrong while connecting to Supabase : ${isHaventEmail}` })
-      return
-    }
+  if (isHaventEmail) {
+    res
+      .status(400)
+      .json({
+        error: `Something went wrong while connecting to Supabase : ${isHaventEmail}`,
+      })
+    return
+  }
 
-  if (!isHaveEmail.length || isHaveEmail.length <= 0 || isHaveEmail === undefined) {
+  const isHaveEmailCheck = isHaveEmail?.length ?? 0
+  
+  if (isHaveEmailCheck <= 0) {
     await supabase
-      .from('user_email_data')
-      .insert({ email: email, user_id: userID })
+      .from('projectEmailList')
+      .insert({ email: email, projectKey: projectKey })
   } else {
-    const data = isHaveEmail?.find((item) => item.user_id === userID)
+    const data = isHaveEmailCheck?.find((item) => item.projectKey === projectKey)
     data
       ? ''
       : await supabase
           .from('user_email_data')
-          .insert({ email: email, user_id: userID })
+          .insert({ email: email, projectKey: projectKey })
   }
 
-  res.send({ email: email, email_key: userID })
+  res.send({ email: email, projectKey: projectKey })
 }
 
 export default handle
