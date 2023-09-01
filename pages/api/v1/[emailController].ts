@@ -16,7 +16,7 @@ export default async function handler(
   const props = JSON.parse(req.body)
   const { email, projectKey } = props
 
-  if (!email || !emailController) {
+  if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and emailKey are required' })
     return
   }
@@ -34,24 +34,22 @@ export default async function handler(
   }
 
   if (isHaveEmail?.length <= 0) {
-    await supabase
-      .from('projectEmailList')
-      .insert({
-        email: email,
-        projectKey: projectKey,
-        userEmailController: emailController,
-      })
+    await supabase.from('projectEmailList').insert({
+      email: email,
+      projectKey: projectKey,
+      userEmailController: emailController,
+    })
   } else {
     const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
-      ? ''
-      : await supabase
-          .from('projectEmailList')
-          .insert({
-            email: email,
-            projectKey: projectKey,
-            userEmailController: emailController,
-          })
+      ? res.status(400).json({
+          error: `This email already exists in the whitelist`,
+        })
+      : await supabase.from('projectEmailList').insert({
+          email: email,
+          projectKey: projectKey,
+          userEmailController: emailController,
+        })
   }
 
   return res.send(`Hey what are you doing here?`)
