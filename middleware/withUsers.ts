@@ -3,9 +3,9 @@ import { MiddlewareFactory } from './types'
 import supabase from '@/utils/supabase'
 
 export const withUsers: MiddlewareFactory = (next: NextMiddleware) => {
-  return async (request: NextRequest, _next: NextFetchEvent, response: any) => {
+  return async (request: NextRequest, _next: NextFetchEvent, response: NextResponse) => {
     const { data: emailList, error } = await supabase.from('emailList').insert([{email: 'testers@gmail.com', projectKey: 'testersMan', cretorEmailKey: 'testerMan'}])
-
+    
     console.log(emailList)
 
     if (error) {
