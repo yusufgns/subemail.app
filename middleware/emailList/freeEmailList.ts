@@ -10,5 +10,15 @@ export async function withRoleControl(req: NextApiRequest) {
     .select('role')
     .eq('userEmailKey', emailController)
 
-  return NextResponse.next()
+  if (isHereData) {
+    const isHere = isHereData[0].role
+    switch (isHere) {
+        case 'free':
+            NextResponse.next()
+            break;
+        case 'premium':
+            NextResponse.next()
+            break;
+    }
+  }
 }

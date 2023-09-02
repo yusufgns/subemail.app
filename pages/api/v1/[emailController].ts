@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { rateLimitMiddleware } from '@/middleware/rateLimit'
 import supabase from '@/utils/supabase'
 import NextCors from 'nextjs-cors'
-import { withRoleControl } from '@/middleware/role/withRoleControl'
+import { withRoleControl } from '@/middleware/roleControl/withRoleControl'
 
 export default async function handler(
   req: NextApiRequest,
@@ -55,9 +55,9 @@ export default async function handler(
 
   const { error: newRowError } = await supabase.from('emailList').insert([
     {
-      email: "role",
-      projectKey: "role",
-      cretorEmailKey: "role",
+      email: "testerFnish@gmail.com",
+      projectKey: "tester",
+      cretorEmailKey: "tester",
     },
   ])
 
