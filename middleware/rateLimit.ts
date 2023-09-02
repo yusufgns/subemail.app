@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 const RATE_LIMIT_DURATION = 60 * 1000
 const MAX_REQUESTS_PER_USER = 1
@@ -9,8 +9,7 @@ const userRequestCounts = new Map<
   { count: number; lastRequestTime: number }
 >()
 
-export function rateLimitMiddleware(req: NextApiRequest, callback: () => void) {
-  const res = NextResponse.next() as any
+export function rateLimitMiddleware(req: NextApiRequest, res: NextApiResponse) {
   const userIP = req.socket.remoteAddress as string
 
   if (!userRequestCounts.has(userIP)) {
