@@ -9,6 +9,7 @@ import supabase from '@/utils/supabase'
 
 export const withUsers: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
+    console.log(request.nextUrl.pathname.startsWith)
     const res = NextResponse.next() as any
 
     const { data: emailList, error } = await supabase.from('emailList').insert([
@@ -27,4 +28,8 @@ export const withUsers: MiddlewareFactory = (next: NextMiddleware) => {
 
     return next(request, _next)
   }
+}
+
+export const config = {
+  matcher: '/api/user/:path*',
 }
