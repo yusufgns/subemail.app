@@ -2,7 +2,6 @@ import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { rateLimitMiddleware } from '@/middleware/rateLimit'
-import { withRoleControl } from '@/middleware/roleControl/withRoleControl'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await rateLimitMiddleware(req, res)
@@ -29,12 +28,20 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const isHaveEmailData = isHaveEmail?.length ?? 0
 
   if (isHaveEmailData <= 0) {
-    await withRoleControl(req)
+    await supabase.from('emailList').insert({
+      email: email,
+      projectKey: projectKey,
+      cretorEmailKey: emailController,
+    })
   } else {
     const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
       ? ''
-      : await withRoleControl(req)
+      : await supabase.from('emailList').insert({
+          email: email,
+          projectKey: projectKey,
+          cretorEmailKey: emailController,
+        })
   }
 
   res.status(200).json({ message: `Success: Email successfully added` })
