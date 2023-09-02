@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextResponse } from 'next/server';
 
 const RATE_LIMIT_DURATION = 60 * 1000
-const MAX_REQUESTS_PER_USER = 1
+const MAX_REQUESTS_PER_USER = 2
 
 const userRequestCounts = new Map<
   string,
