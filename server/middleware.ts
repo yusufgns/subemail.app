@@ -1,12 +1,11 @@
-import { NextResponse, NextRequest } from 'next/server'
-const isUserRouter = (pathname: string) => {
-  return pathname.startsWith('/api/users')
-}
+import { NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 
-export function authMiddleware(request: NextRequest, response: NextResponse) {
-  return NextResponse.redirect(new URL('/fkmdkfmkfmldg'))
+export function middleware(request: NextRequest, response: NextResponse) {
+  console.log('url', request.url)
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/api/user/:path*', '/api/v1/:path*'],
+  matcher: ['/api/user/:controller', '/api/v1/:emailController']
 }
