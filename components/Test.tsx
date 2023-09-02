@@ -17,17 +17,17 @@ export default function Test() {
   const emailss = 'TESTTTASDAD'
 
   const onSubmit = async () => {
-    const data = await fetch(
-      'https://submails.vercel.app/api/v1/9199f124-e1bb-4413-aec0-f508a3c5516d',
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          email: 'gunesyusasdasddasdsuf024@gmail.com',
-          projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
-        }),
-      },
-    )
-    console.log(data)
+    const { data: isHereData, error } = await supabase
+      .from('users')
+      .select('role')
+      .eq('userEmailKey', '9199f124-e1bb-4413-aec0-f508a3c5516d')
+    isHereData?.map((item) => {
+      switch (item.role) {
+        case 'low':
+          console.log('low')
+          break
+      }
+    })
   }
 
   return (

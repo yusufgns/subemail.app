@@ -4,35 +4,44 @@ import supabase from '@/utils/supabase'
 
 export async function withRoleControl(req: NextApiRequest) {
   const { emailController } = req.query
+  const res = NextResponse.next() as any
 
   const { data: isHereData, error } = await supabase
     .from('users')
     .select('role')
     .eq('userEmailKey', emailController)
 
-  const isHereDataSucces = isHereData?.length ?? 0 as any
-  const isData = isHereDataSucces[0].role
+  isHereData?.map(async (item) => {
+    switch (item.role) {
+      case 'free':
+        await supabase.from('emailList').insert([
+          {
+            email: 'free@gmail.com',
+            projectKey: 'free',
+            cretorEmailKey: 'free',
+          },
+        ])
 
-  switch (isData) {
-    case 'free':
-      await supabase.from('emailList').insert([
-        {
-          email: 'free@gmail.com',
-          projectKey: 'free',
-          cretorEmailKey: 'free',
-        },
-      ])
-      break
-    case 'premium':
-      await supabase.from('emailList').insert([
-        {
-          email: 'premium@gmail.com',
-          projectKey: 'premium',
-          cretorEmailKey: 'premium',
-        },
-      ])
-      break
-  }
+        await res
+          .status(200)
+          .json({ message: `Success: Email successfully added` })
+        break
+
+      case 'low':
+        await supabase.from('emailList').insert([
+          {
+            email: 'low@gmail.com',
+            projectKey: 'low',
+            cretorEmailKey: 'low',
+          },
+        ])
+
+        await res
+          .status(200)
+          .json({ message: `Success: Email successfully added` })
+        break
+    }
+  })
 
   return NextResponse.next()
 }
