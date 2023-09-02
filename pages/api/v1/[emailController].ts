@@ -25,32 +25,31 @@ export default async function handler(
     res.status(400).json({ error: 'Email and projectKey are required' })
     return
   }
-  
+
+  const {
+    data: existingRowData,
+    error: existingRowError,
+  } = await supabase
+    .from('emailList')
+    .select('*')
+    .eq('email', email)
+    .eq('projectKey', projectKey)
+
+  if (existingRowError) {
+    res.status(400).json({
+      error: `Something went wrong while connecting to Supabase | Error 400`,
+    })
+    return false
+  }
+
+  if (existingRowData.length > 0) {
+    res.status(400).json({
+      error:
+        'A row with the same email and projectKey combination already exists',
+    })
+  }
+
   await withRoleControl(req)
-
-  // const {
-  //   data: existingRowData,
-  //   error: existingRowError,
-  // } = await supabase
-  //   .from('emailList')
-  //   .select('*')
-  //   .eq('email', email)
-  //   .eq('projectKey', projectKey)
-
-  // if (existingRowError) {
-  //   res.status(400).json({
-  //     error: `Something went wrong while connecting to Supabase | Error 400`,
-  //   })
-  //   return
-  // }
-
-  // if (existingRowData.length > 0) {
-  //   res.status(400).json({
-  //     error:
-  //       'A row with the same email and projectKey combination already exists',
-  //   })
-  //   return
-  // }
 
   return res.status(200).json({ message: `Success: Email successfully added` })
 }

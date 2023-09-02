@@ -36,7 +36,7 @@ export async function withRoleControl(req: NextApiRequest) {
             .status(400)
             .json({ error: `Failed to add the row to the database` })
         }
-        break
+        break;
 
       case 'low':
         const { data: isLowData, error: isLowError } = await supabase
