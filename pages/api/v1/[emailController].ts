@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import supabase from '@/utils/supabase'
 import NextCors from 'nextjs-cors'
 
@@ -45,7 +45,6 @@ export default async function handler(
     optionsSuccessStatus: 200,
   })
 
-  NextResponse.json({ message: 'Hello world!' })
   NextResponse.json({ message: 'Hello world!' })
 
   const { emailController } = req.query
