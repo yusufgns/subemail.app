@@ -2,7 +2,6 @@ import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { rateLimitMiddleware } from '@/middleware/rateLimit'
-import { withRoleControl } from '@/middleware/roleControl/withRoleControl'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
@@ -12,38 +11,39 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   const data = JSON.parse(req.body)
-  const { emailController } = req.query
   const { email, projectKey } = data
+  const { emailController } = req.query
 
   if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and Project Key are required' })
     return
   }
 
-  const { data: isHaveEmail, error: isHaveEmailError } = await supabase
+  const { data: isHaveEmail, error: isHaventEmail } = await supabase
     .from('emailList')
     .select('*')
     .eq('email', email)
 
-  if (isHaveEmailError) {
-    res.status(400).json({
-      error: `Something went wrong while connecting to Supabase | Error 400`,
-    })
-    return false
-  }
+  const isHaveEmailData = isHaveEmail?.length ?? 0
 
-  if (!isHaveEmail.length || isHaveEmail.length <= 0) {
-    await withRoleControl(req)
+  if (isHaveEmailData <= 0) {
+    await supabase.from('emailList').insert({
+      email: email,
+      projectKey: projectKey,
+      cretorEmailKey: emailController,
+    })
   } else {
     const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
-      ? res.status(400).json({
-          error: `Something went wrong while connecting to Supabase | Error 400`,
+      ? ''
+      : await supabase.from('emailList').insert({
+          email: email,
+          projectKey: projectKey,
+          cretorEmailKey: emailController,
         })
-      : await withRoleControl(req)
   }
 
-  res.send('Success your request!')
+  res.status(200).json({ message: `Success: Email successfully added` })
 }
 
 export default handle
