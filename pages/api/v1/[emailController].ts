@@ -29,7 +29,7 @@ export default async function handler(
   const {
     data: existingRowData,
     error: existingRowError,
-  } = await supabase.from('emailList').select('projectKey').eq('email', email)
+  } = await supabase.from('emailList').select('*').eq('email', email)
 
   if (existingRowError) {
     res.status(400).json({
@@ -42,7 +42,13 @@ export default async function handler(
 
   if (checkData) {
     const data = existingRowData.find((item) => item.projectKey === projectKey)
-    if (data) await supabase.from('emailList').insert({ email: "gunesyusuf024@gmail.com", projectKey: "flksdfjnsdfjn" })
+    if (data)
+      await supabase
+        .from('emailList')
+        .insert({
+          email: 'gunesyusuf024@gmail.com',
+          projectKey: 'flksdfjnsdfjn',
+        })
   }
 
   return res.status(200).json({ message: `Success: Email successfully added` })
