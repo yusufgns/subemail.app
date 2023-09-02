@@ -9,21 +9,20 @@ import supabase from '@/utils/supabase'
 
 export const withUsers: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
-    const { data: emailList, error } = await supabase
-      .from('emailList')
-      .insert([
-        {
-          email: 'testers@gmail.com',
-          projectKey: 'testersMan',
-          cretorEmailKey: 'testerMan',
-        },
-      ])
+    const res = NextResponse.next()
 
+    const { data: emailList, error } = await supabase.from('emailList').insert([
+      {
+        email: 'testers@gmail.com',
+        projectKey: 'testersMan',
+        cretorEmailKey: 'testerMan',
+      },
+    ])
     console.log(emailList)
 
     if (error) {
       console.error('Error fetching user data:', error)
-      return console.error(error)
+      return res.status(500).json({ error: 'Internal Server Error' })
     }
 
     return next(request, _next)
