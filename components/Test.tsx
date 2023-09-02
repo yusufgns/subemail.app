@@ -18,7 +18,7 @@ export default function Test() {
 
   const onSubmit = async () => {
     const data = await fetch(
-      'https://submails.vercel.app/api/user/9199f124-e1bb-4413-aec0-f508a3c5516d',
+      'https://submails.vercel.app/api/v1/9199f124-e1bb-4413-aec0-f508a3c5516d',
       {
         method: 'POST',
         body: JSON.stringify({
