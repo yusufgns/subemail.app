@@ -35,10 +35,7 @@ export default async function handler(
     .eq('userEmailKey', controller)
 
   if (thisUserRole) {
-    switch (thisUserRole[0]?.role) {
-      case 'free':
-        await withContext()
-    }
+
   }
   console.log('error', thisUserRoleERROR)
 
