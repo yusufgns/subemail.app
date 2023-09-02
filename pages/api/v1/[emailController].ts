@@ -2,6 +2,7 @@ import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { rateLimitMiddleware } from '@/middleware/rateLimit'
+import { withRoleControl } from '@/middleware/roleControl/withRoleControl'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
@@ -21,28 +22,28 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const { data: isHaveEmail, error: isHaventEmail } = await supabase
+  const { data: isHaveEmail, error: isHaveEmailError } = await supabase
     .from('emailList')
     .select('*')
     .eq('email', email)
 
-  const isEmailData = isHaveEmail?.length ?? 0
-
-  if (isEmailData <= 0) {
-    await supabase.from('emailList').insert({
-      email: email,
-      projectKey: projectKey,
-      cretorEmailKey: emailController,
+  if (isHaveEmailError) {
+    res.status(400).json({
+      error: `Something went wrong while connecting to Supabase | Error 400`,
     })
-  } else {
-    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
-    data
-      ? ''
-      : await supabase.from('emailList').insert({
-          email: email,
-          projectKey: projectKey,
-          cretorEmailKey: emailController,
-        })
+    return false
+  }
+
+  const checkData = isHaveEmail.length
+
+  if (checkData <= 0 || checkData === undefined) {
+    await withRoleControl(req)
+  }
+
+  if (checkData > 0) {
+    const data = isHaveEmail.find((item) => item.projectKey === projectKey)
+    if (data) res.status(400).json({ error: 'Email already exists' })
+    if (!data) await withRoleControl(req)
   }
 
   res.send('Success your request!')
