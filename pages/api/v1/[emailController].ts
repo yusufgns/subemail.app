@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { rateLimitMiddleware } from '@/middleware/rateLimit'
 import supabase from '@/utils/supabase'
 import NextCors from 'nextjs-cors'
+import { withRoleControl } from '@/middleware/role/withRoleControl'
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,14 +17,17 @@ export default async function handler(
 
   await rateLimitMiddleware(req, res)
 
-  const { emailController } = req.query
-  const props = JSON.parse(req.body)
-  const { email, projectKey } = props
+  const { emailController } = await req.query
+  const props = await JSON.parse(req.body)
+  const { email, projectKey } = await props
 
   if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and projectKey are required' })
     return
   }
+
+  await withRoleControl(req, res)
+  const role = (await req.headers['x-role']) as string
 
   const {
     data: existingRowData,
@@ -51,9 +55,9 @@ export default async function handler(
 
   const { error: newRowError } = await supabase.from('emailList').insert([
     {
-      email: email,
-      projectKey: projectKey,
-      cretorEmailKey: emailController,
+      email: role,
+      projectKey: role,
+      cretorEmailKey: role,
     },
   ])
 
