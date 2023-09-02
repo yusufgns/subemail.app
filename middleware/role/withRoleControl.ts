@@ -3,16 +3,15 @@ import { NextResponse } from 'next/server'
 import supabase from '@/utils/supabase'
 
 export async function withRoleControl(
-  req: NextApiRequest,
   res: NextApiResponse,
+  emailController: any,
 ) {
-  const { emailController } = req.query
   const { data: isHereData, error } = await supabase
     .from('users')
     .select('role')
     .eq('userEmailKey', emailController)
 
-  if (isHereData)
+  if (isHereData) {
     if (isHereData?.length ?? 0) {
       switch (isHereData[0].role) {
         case 'free':
@@ -26,6 +25,7 @@ export async function withRoleControl(
           break
       }
     }
+  }
 
   return NextResponse.next()
 }

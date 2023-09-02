@@ -17,16 +17,16 @@ export default async function handler(
 
   await rateLimitMiddleware(req, res)
 
-  const { emailController } = await req.query
-  const props = await JSON.parse(req.body)
-  const { email, projectKey } = await props
+  const { emailController } = req.query
+  const props = JSON.parse(req.body)
+  const { email, projectKey } = props
 
   if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and projectKey are required' })
     return
   }
 
-  await withRoleControl(req, res)
+  await withRoleControl(res, emailController)
   const role = (await req.headers['x-role']) as string
 
   const {
