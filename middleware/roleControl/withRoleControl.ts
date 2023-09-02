@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextResponse } from 'next/server'
 import supabase from '@/utils/supabase'
+import { withFreeEmailList } from '@/middleware/emailList/freeEmailList'
+import { withLowEmailList } from '@/middleware/emailList/lowEmailList'
+import { withMiddleEmailList } from '@/middleware/emailList/middleEmailList'
+import { withhighEmailList } from '@/middleware/emailList/highEmailList'
 
 export async function withRoleControl(req: NextApiRequest) {
   const { emailController } = req.query
@@ -14,34 +18,23 @@ export async function withRoleControl(req: NextApiRequest) {
   isHereData?.map(async (item) => {
     switch (item.role) {
       case 'free':
-        await supabase.from('emailList').insert([
-          {
-            email: 'free@gmail.com',
-            projectKey: 'free',
-            cretorEmailKey: 'free',
-          },
-        ])
-
-        await res
-          .status(200)
-          .json({ message: `Success: Email successfully added` })
+        withFreeEmailList(req)
         break
 
       case 'low':
-        await supabase.from('emailList').insert([
-          {
-            email: 'low@gmail.com',
-            projectKey: 'low',
-            cretorEmailKey: 'low',
-          },
-        ])
+        withLowEmailList(req)
+        break
 
-        await res
-          .status(200)
-          .json({ message: `Success: Email successfully added` })
+      case 'middle':
+        withMiddleEmailList(req)
+        break
+
+      case 'high':
+        withhighEmailList(req)
+        break
+      default:
+        NextResponse.next()
         break
     }
   })
-
-  return NextResponse.next()
 }
