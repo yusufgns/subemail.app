@@ -23,6 +23,10 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { data: isHaveEmail, error: isHaventEmail } = await supabase
     .from('emailList')
+    .insert([{ email: "tester", projectKey: "tester", emailController: "tester" }])
+
+  /* const { data: isHaveEmail, error: isHaventEmail } = await supabase
+    .from('emailList')
     .select('*')
     .eq('email', email)
 
@@ -43,7 +47,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
           projectKey: projectKey,
           emailController: emailController,
         })
-  }
+  } */
 
   res.send('Success your request!')
 }
