@@ -17,7 +17,7 @@ export default function Test() {
   const emailss = 'TESTTTASDAD'
 
   const onSubmit = async () => {
-    const data = await fetch(
+    /* const data = await fetch(
       'https://submails.vercel.app/api/v1/9199f124-e1bb-4413-aec0-f508a3c5516d',
       {
         method: 'POST',
@@ -27,7 +27,17 @@ export default function Test() {
         }),
       },
     )
-    console.log(data)
+    console.log(data) */
+    const data = fetch(
+      '/api/tester', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: 'asddasasd',
+          projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
+        })
+      }
+    )
+    console.log('data', data)
   }
 
   const handleTest = async () => {

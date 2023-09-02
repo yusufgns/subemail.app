@@ -1,16 +1,52 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import supabase from '@/utils/supabase'
 import NextCors from 'nextjs-cors'
+
+const RATE_LIMIT_DURATION = 60000
+const MAX_REQUESTS_PER_USER = 2
+
+const userRequestCounts = new Map<
+  string,
+  { count: number; lastRequestTime: number }
+>()
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  const userIP = req.socket.remoteAddress as any
+
+  if (!userRequestCounts.has(userIP)) {
+    userRequestCounts.set(userIP, {
+      count: 1,
+      lastRequestTime: Date.now(),
+    })
+  } else {
+    const userRequestInfo = userRequestCounts.get(userIP) as any
+    const currentTime = Date.now()
+
+    if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
+      if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
+        return res.status(429).json({ error: 'Too many requests' })
+      } else {
+        userRequestInfo.count++
+        userRequestInfo.lastRequestTime = currentTime
+      }
+    } else {
+      userRequestInfo.count = 1
+      userRequestInfo.lastRequestTime = currentTime
+    }
+  }
+
   await NextCors(req, res, {
     methods: ['POST'],
     origin: '*',
     optionsSuccessStatus: 200,
   })
+
+  NextResponse.json({ message: 'Hello world!' })
+  NextResponse.json({ message: 'Hello world!' })
 
   const { emailController } = req.query
   const props = JSON.parse(req.body)
@@ -21,8 +57,10 @@ export default async function handler(
     return
   }
 
-  // E-posta ve proje anahtarıyla veritabanında mevcut bir satırı arayın
-  const { data: existingRowData, error: existingRowError } = await supabase
+  const {
+    data: existingRowData,
+    error: existingRowError,
+  } = await supabase
     .from('emailList')
     .select('*')
     .eq('email', email)
@@ -35,15 +73,14 @@ export default async function handler(
     return
   }
 
-  // Eğer aynı e-posta ve aynı proje anahtarı ile bir satır varsa, hata mesajı gönder
   if (existingRowData.length > 0) {
     res.status(400).json({
-      error: 'A row with the same email and projectKey combination already exists',
+      error:
+        'A row with the same email and projectKey combination already exists',
     })
     return
   }
 
-  // Yeni satırı ekleyin
   const { data: newRowData, error: newRowError } = await supabase
     .from('emailList')
     .insert([
