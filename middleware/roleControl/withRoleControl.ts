@@ -10,28 +10,28 @@ export async function withRoleControl(req: NextApiRequest) {
     .select('role')
     .eq('userEmailKey', emailController)
 
-  if (isHereData) {
-    const isHere = isHereData[0].role
-    switch (isHere) {
-      case 'free':
-        await supabase.from('emailList').insert([
-          {
-            email: 'free@gmail.com',
-            projectKey: 'free',
-            cretorEmailKey: 'free',
-          },
-        ])
-        break
-      case 'premium':
-        await supabase.from('emailList').insert([
-          {
-            email: 'premium@gmail.com',
-            projectKey: 'premium',
-            cretorEmailKey: 'premium',
-          },
-        ])
-        break
-    }
+  const isHereDataSucces = isHereData?.length ?? 0 as any
+  const isData = isHereDataSucces[0].role
+
+  switch (isData) {
+    case 'free':
+      await supabase.from('emailList').insert([
+        {
+          email: 'free@gmail.com',
+          projectKey: 'free',
+          cretorEmailKey: 'free',
+        },
+      ])
+      break
+    case 'premium':
+      await supabase.from('emailList').insert([
+        {
+          email: 'premium@gmail.com',
+          projectKey: 'premium',
+          cretorEmailKey: 'premium',
+        },
+      ])
+      break
   }
 
   return NextResponse.next()
