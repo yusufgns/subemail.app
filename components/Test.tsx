@@ -65,7 +65,7 @@ export default function Test() {
   }
 
   return (
-    <div onClick={onSubmit} className="bg-gray-500">
+    <div onClick={() => onSubmit()} className="bg-gray-500">
       TEST BUTTON <button>asdasdasdd</button>
     </div>
   )
