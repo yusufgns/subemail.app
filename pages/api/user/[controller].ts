@@ -32,7 +32,7 @@ export default async function handler(
   const { data: thisUserRole, error: thisUserRoleERROR } = await supabase
     .from('users')
     .select('role')
-    .eq('userEmailKey', '9199f124-e1bb-4413-aec0-f508a3c5516d')
+    .eq('userEmailKey', controller)
 
   if (thisUserRole) {
     switch (thisUserRole[0]?.role) {
