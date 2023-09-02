@@ -17,9 +17,9 @@ export default async function handler(
 
   await rateLimitMiddleware(req, res)
 
-  const { emailController } = req.query
   const props = JSON.parse(req.body)
   const { email, projectKey } = props
+  const { emailController } = req.query
 
   if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and projectKey are required' })
@@ -29,11 +29,7 @@ export default async function handler(
   const {
     data: existingRowData,
     error: existingRowError,
-  } = await supabase
-    .from('emailList')
-    .select('*')
-    .eq('email', email)
-    .eq('projectKey', projectKey)
+  } = await supabase.from('emailList').select('projectKey').eq('email', email)
 
   if (existingRowError) {
     res.status(400).json({
@@ -42,14 +38,13 @@ export default async function handler(
     return false
   }
 
-  if (existingRowData.length > 0) {
-    res.status(400).json({
-      error:
-        'A row with the same email and projectKey combination already exists',
-    })
-  }
+  const checkData = existingRowData.length ?? 0
 
-  await withRoleControl(req)
+  if (checkData) {
+    const data = existingRowData.find((item) => item.projectKey === projectKey)
+    if (data) await withRoleControl(req)
+    if (!data) return res.status(400).json({ message: `ERROR: Email is valid` })
+  }
 
   return res.status(200).json({ message: `Success: Email successfully added` })
 }
