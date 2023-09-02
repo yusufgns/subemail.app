@@ -21,12 +21,13 @@ export default async function handler(
   const props = JSON.parse(req.body)
   const { email, projectKey } = props
 
+  await withRoleControl(req)
+
   if (!email || !projectKey) {
     res.status(400).json({ error: 'Email and projectKey are required' })
     return
   }
 
-  await withRoleControl(res, emailController)
 
   const {
     data: existingRowData,
