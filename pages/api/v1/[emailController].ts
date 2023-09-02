@@ -40,15 +40,18 @@ export default async function handler(
 
   const checkData = existingRowData.length ?? 0
 
+  if(!checkData) {
+    await withRoleControl(req)
+  }
+
   if (checkData) {
     const data = existingRowData.find((item) => item.projectKey === projectKey)
-    if (data)
-      await supabase
-        .from('emailList')
-        .insert({
-          email: 'gunesyusuf024@gmail.com',
-          projectKey: 'flksdfjnsdfjn',
-        })
+    if (data) {
+      await supabase.from('emailList').insert({
+        email: 'gunesyusuf024@gmail.com',
+        projectKey: 'flksdfjnsdfjn',
+      })
+    }
   }
 
   return res.status(200).json({ message: `Success: Email successfully added` })
