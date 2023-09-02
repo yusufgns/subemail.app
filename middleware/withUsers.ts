@@ -9,7 +9,7 @@ import supabase from '@/utils/supabase'
 
 export const withUsers: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
-    const res = NextResponse.next()
+    const res = NextResponse.next() as any
 
     const { data: emailList, error } = await supabase.from('emailList').insert([
       {
