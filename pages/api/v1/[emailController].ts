@@ -11,8 +11,6 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     optionsSuccessStatus: 200,
   })
 
-  await rateLimitMiddleware(req, res)
-
   const data = JSON.parse(req.body)
   const { emailController } = req.query
   const { email, projectKey } = data
@@ -34,16 +32,15 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return false
   }
 
-  const checkData = isHaveEmail.length
-
-  if (checkData <= 0 || checkData === undefined) {
+  if (!isHaveEmail.length || isHaveEmail.length <= 0) {
     await withRoleControl(req)
-  }
-
-  if (checkData > 0) {
-    const data = isHaveEmail.find((item) => item.projectKey === projectKey)
-    if (data) res.status(400).json({ error: 'Email already exists' })
-    if (!data) await withRoleControl(req)
+  } else {
+    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
+    data
+      ? res.status(400).json({
+          error: `Something went wrong while connecting to Supabase | Error 400`,
+        })
+      : await withRoleControl(req)
   }
 
   res.send('Success your request!')

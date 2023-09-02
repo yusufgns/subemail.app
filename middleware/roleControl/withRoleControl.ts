@@ -1,10 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextResponse } from 'next/server'
 import supabase from '@/utils/supabase'
-import { withFreeEmailList } from '@/middleware/emailList/freeEmailList'
-import { withLowEmailList } from '@/middleware/emailList/lowEmailList'
-import { withMiddleEmailList } from '@/middleware/emailList/middleEmailList'
-import { withhighEmailList } from '@/middleware/emailList/highEmailList'
 
 export async function withRoleControl(req: NextApiRequest) {
   const { emailController } = req.query
