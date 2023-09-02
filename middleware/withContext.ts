@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
+import { NextApiRequest } from 'next'
 import supabase from '@/utils/supabase'
 
-export const withContext = async (req : any, userEmailKey: any) => {
-  const props = JSON.parse(req.body)
-  const { email, projectKey } = props
-
+export const withContext = async () => {
   const { data, error } = await supabase.from('emailList').insert([
     {
-      email: email,
-      projectKey: projectKey,
-      cretorEmailKey: userEmailKey,
+      email: 'props.email',
+      projectKey: 'props.projectKey',
+      cretorEmailKey: 'role',
     },
   ])
 
