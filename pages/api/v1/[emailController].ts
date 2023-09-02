@@ -27,7 +27,6 @@ export default async function handler(
   }
 
   await withRoleControl(res, emailController)
-  const role = (await req.headers['x-role']) as string
 
   const {
     data: existingRowData,
@@ -55,9 +54,9 @@ export default async function handler(
 
   const { error: newRowError } = await supabase.from('emailList').insert([
     {
-      email: role,
-      projectKey: role,
-      cretorEmailKey: role,
+      email: "role",
+      projectKey: "role",
+      cretorEmailKey: "role",
     },
   ])
 

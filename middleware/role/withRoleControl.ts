@@ -15,10 +15,10 @@ export async function withRoleControl(
     if (isHereData?.length ?? 0) {
       switch (isHereData[0].role) {
         case 'free':
-          res.setHeader('role', 'free')
+          res.status(400).json({ error: 'FREE' })
           break
         case 'low':
-          res.setHeader('role', 'low')
+          res.status(400).json({ error: 'LOW' })
           break
         default:
           res.status(400).json({ error: 'Something went wrong' })

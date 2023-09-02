@@ -22,46 +22,12 @@ export default function Test() {
       {
         method: 'POST',
         body: JSON.stringify({
-          email: 'gunesyusuf024@gmail.com',
+          email: 'gunesyusasdasddasdsuf024@gmail.com',
           projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
         }),
       },
     )
     console.log(data)
-  }
-
-  const handleTest = async () => {
-    fetch(
-      `https://submails.vercel.app/api/v1/c24debfa-c258-422f-9f53-44e4a0e799db`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          email: 'ters3131@gmail.com',
-          emailKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
-        }),
-        mode: 'no-cors', // Opaque yanıt almak için
-      },
-    )
-    ////////////
-    // fetch(`/api/v1/${'asdasdasd'}.ts`, {
-    //   method: 'POST',
-    //   body: JSON.stringify([
-    //     { email: 'example@example.com' },
-    //     { userID: 121233 },
-    //   ]),
-    // })
-    //////////////
-
-    // const { data, error } = await supabase
-    //   .from('user_email_data')
-    //   .insert([
-    //     {
-    //       projectKey: 'c24debfa-c258-422f-9f53-44e4a0e799db',
-    //       email: 'testerzzzz@gmail.com',
-    //     },
-    //   ])
-    // console.log(data)
-    // console.log(error)
   }
 
   return (
