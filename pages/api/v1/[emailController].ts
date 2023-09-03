@@ -1,6 +1,5 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { NextResponse } from 'next/server'
 import NextCors from 'nextjs-cors'
 
 const RATE_LIMIT_DURATION = 60000
@@ -27,7 +26,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
         return res
           .status(400)
-          .json({ message: 'MAX_REQUESTS_PER_USER' })
+          .json({ message: 'Max user requests per user', status: 200 })
       } else {
         userRequestInfo.count++
         userRequestInfo.lastRequestTime = currentTime
@@ -41,7 +40,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
     methods: ['POST', 'GET'],
     origin: '*',
-    optionsSuccessStatus: [200, 400],
+    optionsSuccessStatus: 200,
   })
 
   const data = JSON.parse(req.body)
@@ -49,7 +48,9 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    res.status(200).json({ message: 'Email and project key required' })
+    res
+      .status(200)
+      .json({ message: 'Email and project key required', status: 200 })
     return
   }
 
@@ -69,15 +70,18 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     const data = email_check?.find((item) => item.projectKey === projectKey)
     data
-      ? res.status(400).json({ message: 'Email and project key already exist' })
-      : await supabase.from('emailList').insert({
+      ? res
+          .status(200)
+          .json({ message: 'Email and project key already exist', status: 200 })
+      : (await supabase.from('emailList').insert({
           email: email,
           projectKey: projectKey,
           cretorEmailKey: emailController,
-        })
+        })) &&
+        res
+          .status(200)
+          .json({ message: 'Email and project key required', status: 200 })
   }
-
-  res.status(200).json({ message: 'Email and project key required' })
 }
 
 export default handle
