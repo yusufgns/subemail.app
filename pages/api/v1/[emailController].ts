@@ -41,6 +41,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     methods: ['POST', 'GET'],
     origin: '*',
     optionsSuccessStatus: 200,
+    
   })
 
   const data = JSON.parse(req.body)
