@@ -1,82 +1,54 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-
-const RATE_LIMIT_DURATION = 60000
-const MAX_REQUESTS_PER_USER = 2
-
-const userRequestCounts = new Map<
-  string,
-  { count: number; lastRequestTime: number }
->()
+import { rateLimitMiddleware } from '@/middleware/rateLimit'
+import { withController } from '@/middleware/withController'
+import { NextResponse } from 'next/server'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
-  const userIP = req.socket.remoteAddress as any
-
-  if (!userRequestCounts.has(userIP)) {
-    userRequestCounts.set(userIP, {
-      count: 1,
-      lastRequestTime: Date.now(),
-    })
-  } else {
-    const userRequestInfo = userRequestCounts.get(userIP) as any
-    const currentTime = Date.now()
-
-    if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
-      if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
-        return res.json({ message: 'Too many requests' });
-      } else {
-        userRequestInfo.count++
-        userRequestInfo.lastRequestTime = currentTime
-      }
-    } else {
-      userRequestInfo.count = 1
-      userRequestInfo.lastRequestTime = currentTime
-    }
-  }
+  await rateLimitMiddleware(req, res)
 
   await NextCors(req, res, {
-    methods: ['POST'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
     origin: '*',
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: [200, 400],
   })
 
   const data = JSON.parse(req.body)
   const { email, projectKey } = data
+  const { emailController } = req.query
 
   if (!email || !projectKey) {
-    res.status(400).json({ error: 'Email and userID are required' })
+    NextResponse.json({ status: 200, message: 'Email already exists!' })
     return
   }
 
   const { data: isHaveEmail, error: isHaventEmail } = await supabase
-    .from('projectEmailList')
+    .from('emailList')
     .select('*')
     .eq('email', email)
 
-  if (isHaventEmail) {
-    res.status(400).json({
-      error: `Something went wrong while connecting to Supabase : ${isHaventEmail}`,
+  const isHaveEmailData = isHaveEmail?.length ?? 0
+
+  if (isHaveEmailData <= 0) {
+    await supabase.from('emailList').insert({
+      email: email,
+      projectKey: projectKey,
+      cretorEmailKey: emailController,
     })
-    return
-  }
-
-  const isHaveEmailCheck = isHaveEmail?.length ?? 0
-
-  if (isHaveEmailCheck <= 0) {
-    await supabase
-      .from('projectEmailList')
-      .insert({ email: email, projectKey: projectKey })
   } else {
     const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
       ? ''
-      : await supabase
-          .from('user_email_data')
-          .insert({ email: email, projectKey: projectKey })
+      : await supabase.from('emailList').insert({
+          email: email,
+          projectKey: projectKey,
+          cretorEmailKey: emailController,
+        })
   }
 
-  res.send({ email: email, projectKey: projectKey })
+  return NextResponse.json({ status: 200, message: 'Email added successfully' })
 }
 
 export default handle

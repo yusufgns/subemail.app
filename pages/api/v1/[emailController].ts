@@ -1,18 +1,44 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import { rateLimitMiddleware } from '@/middleware/rateLimit'
-import { withController } from '@/middleware/withController'
-import { NextResponse } from 'next/server'
+
+const RATE_LIMIT_DURATION = 60000
+const MAX_REQUESTS_PER_USER = 2
+
+const userRequestCounts = new Map<
+  string,
+  { count: number; lastRequestTime: number }
+>()
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
-  await rateLimitMiddleware(req, res)
+  const userIP = req.socket.remoteAddress as any
+
+  if (!userRequestCounts.has(userIP)) {
+    userRequestCounts.set(userIP, {
+      count: 1,
+      lastRequestTime: Date.now(),
+    })
+  } else {
+    const userRequestInfo = userRequestCounts.get(userIP) as any
+    const currentTime = Date.now()
+
+    if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
+      if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
+        return res.status(429).json({ error: 'Too many requests' })
+      } else {
+        userRequestInfo.count++
+        userRequestInfo.lastRequestTime = currentTime
+      }
+    } else {
+      userRequestInfo.count = 1
+      userRequestInfo.lastRequestTime = currentTime
+    }
+  }
 
   await NextCors(req, res, {
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
+    methods: ['POST'],
     origin: '*',
-    optionsSuccessStatus: [200, 400],
+    optionsSuccessStatus: 200,
   })
 
   const data = JSON.parse(req.body)
@@ -20,25 +46,25 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    NextResponse.json({ status: 200, message: 'Email already exists!' })
+    res.status(400).json({ error: 'Email and userID are required' })
     return
   }
 
-  const { data: isHaveEmail, error: isHaventEmail } = await supabase
+  const { data: email_check, error: email_check_error } = await supabase
     .from('emailList')
     .select('*')
     .eq('email', email)
 
-  const isHaveEmailData = isHaveEmail?.length ?? 0
+  const email_check_length = email_check?.length ?? 0
 
-  if (isHaveEmailData <= 0) {
+  if (email_check_length <= 0) {
     await supabase.from('emailList').insert({
       email: email,
       projectKey: projectKey,
       cretorEmailKey: emailController,
     })
   } else {
-    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
+    const data = email_check?.find((item) => item.projectKey === projectKey)
     data
       ? ''
       : await supabase.from('emailList').insert({
@@ -47,8 +73,12 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
           cretorEmailKey: emailController,
         })
   }
-  
-  return NextResponse.json({ status: 200, message: 'Email added successfully' })
+
+  res.send({
+    email: email,
+    projectKey: projectKey,
+    cretorEmailKey: emailController,
+  })
 }
 
 export default handle
