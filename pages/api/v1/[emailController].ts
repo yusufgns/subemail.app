@@ -39,7 +39,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   await NextCors(req, res, {
-    methods: ['POST'],
+    methods: ['POST', 'GET'],
     origin: '*',
     optionsSuccessStatus: [200, 400],
   })
