@@ -6,7 +6,7 @@ import { withController } from '@/middleware/withController'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await rateLimitMiddleware(req, res)
-  
+
   await NextCors(req, res, {
     methods: ['POST'],
     origin: '*',
@@ -22,7 +22,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  await withController(req, res)
+  await withController(email, projectKey, emailController)
 
   return res.status(200).json({ message: `Success: Email successfully added` })
 }

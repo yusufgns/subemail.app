@@ -3,11 +3,10 @@ import { NextResponse } from 'next/server'
 import supabase from '@/utils/supabase'
 
 export async function withController(
-  req: NextApiRequest,
-  res: NextApiResponse,
+  email: string | null,
+  projectKey: string | null,
+  emailController: string | string[] | undefined | null,
 ) {
-  const { email, projectKey } = req.body
-  const { emailController } = req.query
   const { data: isHaveEmail, error: isHaventEmail } = await supabase
     .from('emailList')
     .select('*')
