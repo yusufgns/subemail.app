@@ -11,7 +11,8 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
     methods: ['POST'],
     origin: '*',
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 200,
   })
 
   const data = JSON.parse(req.body)
@@ -19,12 +20,12 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    NextResponse.json({status: 400, message: 'Email already exists!' })
+    NextResponse.json({ status: 200, message: 'Email already exists!' })
     return
   }
 
   await withController(email, projectKey, emailController)
-  return NextResponse.json({status: 200, message: 'Email added successfully' })
+  return NextResponse.json({ status: 200, message: 'Email added successfully' })
 }
 
 export default handle
