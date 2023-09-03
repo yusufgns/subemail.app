@@ -7,29 +7,12 @@ export async function withController(
   projectKey: string | null,
   emailController: string | string[] | undefined | null,
 ) {
-  const { data: isHaveEmail, error: isHaventEmail } = await supabase
-    .from('emailList')
-    .select('*')
-    .eq('email', email)
+  const res = NextResponse.next() as any
+  await supabase.from('emailList').insert({
+    email: email,
+    projectKey: projectKey,
+    cretorEmailKey: emailController,
+  })
 
-  const isHaveEmailData = isHaveEmail?.length ?? 0
-
-  if (isHaveEmailData <= 0) {
-    await supabase.from('emailList').insert({
-      email: email,
-      projectKey: projectKey,
-      cretorEmailKey: emailController,
-    })
-  } else {
-    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
-    data
-      ? ''
-      : await supabase.from('emailList').insert({
-          email: email,
-          projectKey: projectKey,
-          cretorEmailKey: emailController,
-        })
-  }
-
-  return NextResponse.next()
+  return res.status(200).json({ message: 'Hello NextJs Cors!' })
 }
