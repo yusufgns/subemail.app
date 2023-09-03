@@ -1,10 +1,9 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { NextResponse } from 'next/server'
 import NextCors from 'nextjs-cors'
 
 const RATE_LIMIT_DURATION = 60000
-const MAX_REQUESTS_PER_USER = 2
+const MAX_REQUESTS_PER_USER = 3
 
 const userRequestCounts = new Map<
   string,
@@ -25,9 +24,10 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
       if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
-        return res
-          .status(200)
-          .json({ message: 'Email and project key required' })
+        return res.status(200).json({
+          status: 400,
+          message: "Hey! You're making too many requests",
+        })
       } else {
         userRequestInfo.count++
         userRequestInfo.lastRequestTime = currentTime
@@ -62,17 +62,18 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const isHaveData = isHaveEmail?.find((item) => item.projectKey === projectKey)
 
-  if (isHaveData) {
-    res.status(200).json({
-      status: 400,
-      message: 'Email and project key already exist',
-    })
-  } else {
+  if (!isHaveData) {
     await supabase.from('emailList').insert({
       email: email,
       projectKey: projectKey,
       cretorEmailKey: emailController,
     })
+  }
+
+  if (isHaveData) {
+    return res
+      .status(200)
+      .json({ status: 400, message: 'This email already exists!' })
   }
 
   return res.status(200).json({ status: 200, message: 'Your data has been sent successfully' })
