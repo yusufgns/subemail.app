@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { rateLimitMiddleware } from '@/middleware/rateLimit'
 import { withController } from '@/middleware/withController'
+import { NextResponse } from 'next/server'
 
 const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await rateLimitMiddleware(req, res)
@@ -18,12 +19,12 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    res.json({ message: 'Hello NextJs Cors!' })
+    NextResponse.json({status: 400, message: 'Email already exists!' })
     return
   }
 
   await withController(email, projectKey, emailController)
-  return res.json({ message: 'Hello NextJs Cors!' })
+  return NextResponse.json({status: 200, message: 'Email added successfully' })
 }
 
 export default handle
