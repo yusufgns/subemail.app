@@ -9,7 +9,8 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await rateLimitMiddleware(req, res)
 
   await NextCors(req, res, {
-    methods: ['POST'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
     origin: '*',
     credentials: true,
     optionsSuccessStatus: 200,
