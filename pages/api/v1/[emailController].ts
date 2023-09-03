@@ -12,8 +12,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     origin: '*',
-    credentials: true,
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: [200, 400],
   })
 
   const data = JSON.parse(req.body)
@@ -25,7 +24,30 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  await withController(email, projectKey, emailController)
+  const { data: isHaveEmail, error: isHaventEmail } = await supabase
+    .from('emailList')
+    .select('*')
+    .eq('email', email)
+
+  const isHaveEmailData = isHaveEmail?.length ?? 0
+
+  if (isHaveEmailData <= 0) {
+    await supabase.from('emailList').insert({
+      email: email,
+      projectKey: projectKey,
+      cretorEmailKey: emailController,
+    })
+  } else {
+    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
+    data
+      ? ''
+      : await supabase.from('emailList').insert({
+          email: email,
+          projectKey: projectKey,
+          cretorEmailKey: emailController,
+        })
+  }
+  
   return NextResponse.json({ status: 200, message: 'Email added successfully' })
 }
 
