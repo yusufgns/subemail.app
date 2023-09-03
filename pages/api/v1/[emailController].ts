@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
 const RATE_LIMIT_DURATION = 60000
-const MAX_REQUESTS_PER_USER = 2
+const MAX_REQUESTS_PER_USER = 10
 
 const userRequestCounts = new Map<
   string,
