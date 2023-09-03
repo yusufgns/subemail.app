@@ -1,5 +1,6 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import NextCors from 'nextjs-cors'
 
 const RATE_LIMIT_DURATION = 60000
@@ -24,7 +25,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
       if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
-        return res.status(429).json({ error: 'Too many requests' })
+        return NextResponse.json({ status: 200, message: 'Email added successfully' })
       } else {
         userRequestInfo.count++
         userRequestInfo.lastRequestTime = currentTime
@@ -46,7 +47,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    res.status(400).json({ error: 'Email and userID are required' })
+    NextResponse.json({ status: 200, message: 'Email and project key required' })
     return
   }
 
@@ -74,11 +75,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         })
   }
 
-  res.send({
-    email: email,
-    projectKey: projectKey,
-    cretorEmailKey: emailController,
-  })
+  NextResponse.json({ status: 200, message: 'Email added successfully' })
 }
 
 export default handle
