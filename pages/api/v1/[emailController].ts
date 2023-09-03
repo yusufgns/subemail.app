@@ -10,7 +10,6 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
     methods: ['POST'],
     origin: '*',
-    preflightContinue: false,
     credentials: true
   })
 
