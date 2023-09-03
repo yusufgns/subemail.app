@@ -26,11 +26,9 @@ export async function withRoleControl(req: NextApiRequest) {
           ])
 
         if (isFreeData) {
-          res.status(200).json({ message: `Success: Email successfully added` })
+          res.json({ message: 'Hello NextJs Cors!' })
         } else {
-          res
-            .status(400)
-            .json({ error: `Failed to add the row to the database` })
+          res.json({ message: 'Hello NextJs Cors!' })
         }
         break
 
@@ -46,11 +44,9 @@ export async function withRoleControl(req: NextApiRequest) {
           ])
 
         if (isLowData) {
-          res.status(200).json({ message: `Success: Email successfully added` })
+          res.json({ message: 'Hello NextJs Cors!' })
         } else {
-          res
-            .status(400)
-            .json({ error: `Failed to add the row to the database` })
+          res.json({ message: 'Hello NextJs Cors!' })
         }
         break
 
@@ -66,11 +62,9 @@ export async function withRoleControl(req: NextApiRequest) {
           },
         ])
         if (isMiddleData) {
-          res.status(200).json({ message: `Success: Email successfully added` })
+          res.json({ message: 'Hello NextJs Cors!' })
         } else {
-          res
-            .status(400)
-            .json({ error: `Failed to add the row to the database` })
+          res.json({ message: 'Hello NextJs Cors!' })
         }
         break
 
@@ -85,11 +79,9 @@ export async function withRoleControl(req: NextApiRequest) {
             },
           ])
         if (isHighData) {
-          res.status(200).json({ message: `Success: Email successfully added` })
+          res.json({ message: 'Hello NextJs Cors!' })
         } else {
-          res
-            .status(400)
-            .json({ error: `Failed to add the row to the database` })
+          res.json({ message: 'Hello NextJs Cors!' })
         }
         break
       default:

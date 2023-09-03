@@ -18,13 +18,12 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    res.status(400).json({ error: 'Email and Project Key are required' })
+    res.json({ message: 'Hello NextJs Cors!' })
     return
   }
 
   await withController(email, projectKey, emailController)
-
-  return res.status(200).json({ message: `Success: Email successfully added` })
+  return res.json({ message: 'Hello NextJs Cors!' })
 }
 
 export default handle

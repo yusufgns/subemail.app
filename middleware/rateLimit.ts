@@ -26,7 +26,7 @@ export function rateLimitMiddleware(req: NextApiRequest, res: NextApiResponse) {
 
     if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
       if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
-        return res.status(429).json({ error: 'Too many requests' })
+        return res.json({ error: 'Too many requests' })
       } else {
         userRequestInfo.count++
         userRequestInfo.lastRequestTime = currentTime

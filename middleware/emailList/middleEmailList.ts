@@ -11,18 +11,18 @@ export async function withMiddleEmailList(req: NextApiRequest) {
     .from('emailList')
     .insert([
       {
-        email: "middle@gmail.com",
+        email: 'middle@gmail.com',
         projectKey: projectKey,
         cretorEmailKey: emailController,
       },
     ])
 
   if (isLowData) {
-    res.status(200).json({ message: `Success: Email successfully added` })
+    res.json({ message: 'Hello NextJs Cors!' })
     return NextResponse.next()
   }
 
   if (isLowError) {
-    res.status(400).json({ error: `Failed to add the row to the database` })
+    res.json({ message: 'Hello NextJs Cors!' })
   }
 }
