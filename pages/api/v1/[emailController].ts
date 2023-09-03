@@ -39,9 +39,9 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   await NextCors(req, res, {
-    methods: ['POST', 'GET'],
+    methods: ['POST'],
     origin: '*',
-    optionsSuccessStatus: [200, 400],
+    optionsSuccessStatus: 200,
   })
 
   const data = JSON.parse(req.body)
@@ -60,29 +60,22 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     .select('*')
     .eq('email', email)
 
-  const isHaveData = isHaveEmail?.length ?? 0
+  const isHaveData = isHaveEmail?.find((item) => item.projectKey === projectKey)
 
-  if (isHaveData <= 0) {
+  if (isHaveData) {
+    res.status(200).json({
+      status: 400,
+      message: 'Email and project key already exist',
+    })
+  } else {
     await supabase.from('emailList').insert({
       email: email,
       projectKey: projectKey,
       cretorEmailKey: emailController,
     })
-  } else {
-    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
-    data
-      ? res.status(200).json({
-          status: 400,
-          message: 'Email and project key already exist',
-        })
-      : await supabase.from('emailList').insert({
-          email: email,
-          projectKey: projectKey,
-          cretorEmailKey: emailController,
-        })
   }
 
-  res.status(200).json({ status: 200, message: 'Your data has been sent successfully' })
+  return res.status(200).json({ status: 200, message: 'Your data has been sent successfully' })
 }
 
 export default handle
