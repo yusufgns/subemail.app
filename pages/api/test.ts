@@ -75,7 +75,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         })
   }
 
-  res.status(200).json({ message: 'Email and project key required' })
+  return res.status(200).json({ message: 'Email and project key required' })
 }
 
 export default handle

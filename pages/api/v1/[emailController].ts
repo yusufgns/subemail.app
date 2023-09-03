@@ -1,9 +1,10 @@
 import supabase from '@/utils/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server'
 import NextCors from 'nextjs-cors'
 
 const RATE_LIMIT_DURATION = 60000
-const MAX_REQUESTS_PER_USER = 10
+const MAX_REQUESTS_PER_USER = 2
 
 const userRequestCounts = new Map<
   string,
@@ -25,8 +26,8 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
       if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
         return res
-          .status(400)
-          .json({ message: 'Max user requests per user', status: 200 })
+          .status(200)
+          .json({ message: 'Email and project key required' })
       } else {
         userRequestInfo.count++
         userRequestInfo.lastRequestTime = currentTime
@@ -40,8 +41,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
     methods: ['POST', 'GET'],
     origin: '*',
-    optionsSuccessStatus: 200,
-    
+    optionsSuccessStatus: [200, 400],
   })
 
   const data = JSON.parse(req.body)
@@ -51,38 +51,38 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!email || !projectKey) {
     res
       .status(200)
-      .json({ message: 'Email and project key required', status: 200 })
+      .json({ status: 400, message: 'Email and project key required' })
     return
   }
 
-  const { data: email_check, error: email_check_error } = await supabase
+  const { data: isHaveEmail, error: isHaveEmailError } = await supabase
     .from('emailList')
     .select('*')
     .eq('email', email)
 
-  const email_check_length = email_check?.length ?? 0
+  const isHaveData = isHaveEmail?.length ?? 0
 
-  if (email_check_length <= 0) {
+  if (isHaveData <= 0) {
     await supabase.from('emailList').insert({
       email: email,
       projectKey: projectKey,
       cretorEmailKey: emailController,
     })
   } else {
-    const data = email_check?.find((item) => item.projectKey === projectKey)
+    const data = isHaveEmail?.find((item) => item.projectKey === projectKey)
     data
-      ? res
-          .status(200)
-          .json({ message: 'Email and project key already exist', status: 200 })
-      : (await supabase.from('emailList').insert({
+      ? res.status(200).json({
+          status: 400,
+          message: 'Email and project key already exist',
+        })
+      : await supabase.from('emailList').insert({
           email: email,
           projectKey: projectKey,
           cretorEmailKey: emailController,
-        })) &&
-        res
-          .status(200)
-          .json({ message: 'Email and project key required', status: 200 })
+        })
   }
+
+  res.status(200).json({ status: 200, message: 'Your data has been sent successfully' })
 }
 
 export default handle
