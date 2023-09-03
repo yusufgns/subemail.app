@@ -25,7 +25,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (currentTime - userRequestInfo.lastRequestTime < RATE_LIMIT_DURATION) {
       if (userRequestInfo.count >= MAX_REQUESTS_PER_USER) {
-        return NextResponse.json({ status: 200, message: 'Email added successfully' })
+        return res.status(200).json({ message: 'Email and project key required' })
       } else {
         userRequestInfo.count++
         userRequestInfo.lastRequestTime = currentTime
@@ -47,7 +47,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { emailController } = req.query
 
   if (!email || !projectKey) {
-    NextResponse.json({ status: 200, message: 'Email and project key required' })
+    res.status(200).json({ message: 'Email and project key required' })
     return
   }
 
@@ -75,7 +75,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         })
   }
 
-  NextResponse.json({ status: 200, message: 'Email added successfully' })
+  res.status(200).json({ message: 'Email and project key required' })
 }
 
 export default handle
