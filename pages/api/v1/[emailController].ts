@@ -10,7 +10,8 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   await NextCors(req, res, {
     methods: ['POST'],
     origin: '*',
-    optionsSuccessStatus: 200,
+    preflightContinue: false,
+    credentials: true
   })
 
   const data = JSON.parse(req.body)
